@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <button id = "ping"> ping</button>
+    <script>
+        let token = {user: userName, browser: browserName};
+        let ping = document.getElementById("ping");
+        ping.addEventListener("click", () => {
+            // not quite sure what this should bed doing inside of this arrow function
+        })
+
+        fetch("https://Name.github.io/CS491-name-Exercise3/", {
+            method: 'POST', // this can be GET, POST, PUT, DELETE 
+            headers: { // this is telling the server how to inperpret the data from the body content. in this case  it JSON data
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }, 
+            body: JSON.stringify(token) //this is the data that we are sending to the server, the current object is a JSON object
+        })
+        .then(response => {
+            if (response.ok) {console.log("Response was SUCCESSFUL!")}
+            else {console.log("Response was NOT successful!")}
+            return response.json();
+        })
+        .then(data => console.log(data));
+
+
+    </script>
+    
+</body>
+</html>
