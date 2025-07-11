@@ -10,7 +10,7 @@
     <button id = "ping"> ping </button>
     <script>
 
-        let DoOnce = true;
+
 
         const a = navigator.userAgent;
         var agent = "Firefox" // the default, ff order is important
@@ -20,6 +20,37 @@
         if (a.indexOf("Edg") > 0) agent = "Edge";
 
         let token = {};
+        let DoOnce = true;
+
+        (async function() {
+                if (DoOnce) {
+                var userName = prompt("Enter your name", name);
+                await setToken(userName);
+                DoOnce = false;
+                console.log("prompt done after setting token userName to : " + token.user);
+            }
+        })();
+
+        (async () => {
+            const response = await fetch("http://127.0.1:8080/token");
+            getToken();
+            // get information from get token and set local token to that
+            // then if the token.biCanPing is false set it to true and update the server and enable the ping button
+            // if the token.biCanPing is true then disable the ping button
+
+
+        })();
+        
+
+        function pollServerOnInterval() {
+            setInterval(async () => {
+                const response = await fetch("http://127.0.0.1:8080/token");
+                const serverToken = await response.json();
+                console.log("Server Token:", serverToken);
+                token = serverToken; // update the token with the server's response
+            }, 5000); 
+        }
+
 
         // creates a JS object {user: name, browser: name} on Client
         async function setToken(name) 
@@ -29,7 +60,7 @@
                 token.user = "No Name";
             }
             token.browser = agent;
-            token.bCanPing = true;
+            // token.bCanPing = true; // this should be set in the init of the page 
         }
 
         // writes a token from Client as a JSON file on the Server
@@ -61,16 +92,10 @@
 
         let ping = document.getElementById("ping");
         ping.addEventListener("click", async () => {
-            console.log("prompt not done");
-            if (DoOnce) {
-                var userName = prompt("Enter your name", name);
-                await setToken(userName);
-                DoOnce = false;
-                console.log("prompt done");
-            }
 
             // token.bCanPing = false;
             await putToken(token);
+            pollServerOnInterval();
         })
 
 

@@ -18,19 +18,25 @@ app.listen(PORT, () => {
  // Request to server from client for some data 
  // app.get("URL",(req,res)=>{})
 app.get("/token", (request, response) => {
-    var jData = fs.readFileSync('token.json'); // Read the token.json file
+    const jData = fs.readFileSync('token.json'); // Read the token.json file
+    const tokenData = JSON.parse(jData); // Parse the JSON data to js object 
 
     console.log("GET Request Successfull!");
 
-    response.send("request received for token.json");
+    response.json(tokenData);
 	
 })
 
 app.post("/token", (request, response) => {
     fs.writeFileSync('token.json', JSON.stringify(request.body, null, 2)); // Write the request body to token.json
 
-	console.log(" TOKEN POST REQUEST SUCCESSFUL");
+	console.log("TOKEN POST REQUEST SUCCESSFUL");
 	console.log(request.body);
 
-	response.send(`Data POST Request Recieved`);
+	response.send(`PINGED from ${request.body.user};`);
 })
+
+app.get("/", (request, response) => {
+    console.log("new Browser connected.");
+    response.send("Browser Connected... at " + PORT);
+});
