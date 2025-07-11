@@ -7,28 +7,92 @@
 </head>
 <body>
 
-    <button id = "ping"> ping</button>
+    <button id = "ping"> ping </button>
     <script>
-        let token = {user: userName, browser: browserName};
+
+        let DoOnce = true;
+
+        const a = navigator.userAgent;
+        var agent = "Firefox" // the default, ff order is important
+        if (a.indexOf("Safari") > 0) agent = "Safari";
+        if (a.indexOf("Chrome") > 0) agent = "Chrome";
+        if (a.indexOf("OPR") > 0) agent = "Opera";
+        if (a.indexOf("Edg") > 0) agent = "Edge";
+
+        let token = {};
+
+        // creates a JS object {user: name, browser: name} on Client
+        async function setToken(name) 
+        {
+            token.user = name;
+            if (token.user === null || token.user === "") {
+                token.user = "No Name";
+            }
+            token.browser = agent;
+            token.bCanPing = true;
+        }
+
+        // writes a token from Client as a JSON file on the Server
+        async function putToken(token) 
+        {
+            fetch("http://127.0.0.1:8080/token", { // listen on the server not the browser port
+                method : "POST", 
+                headers:{
+                    'content-type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(token, null, 2) // extra params to format the JSON data
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log("Server message:", data); 
+            })
+            .catch(error => {
+                console.error("Fetch failed:", error);  
+            });
+        }
+
+        // reads the JSON file on the Server, returns a JS token to the Client
+        async function getToken()
+        {
+
+        }
+
+
         let ping = document.getElementById("ping");
-        ping.addEventListener("click", () => {
-            // not quite sure what this should bed doing inside of this arrow function
+        ping.addEventListener("click", async () => {
+            console.log("prompt not done");
+            if (DoOnce) {
+                var userName = prompt("Enter your name", name);
+                await setToken(userName);
+                DoOnce = false;
+                console.log("prompt done");
+            }
+
+            // token.bCanPing = false;
+            await putToken(token);
         })
 
-        fetch("https://Name.github.io/CS491-name-Exercise3/", {
-            method: 'POST', // this can be GET, POST, PUT, DELETE 
-            headers: { // this is telling the server how to inperpret the data from the body content. in this case  it JSON data
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }, 
-            body: JSON.stringify(token) //this is the data that we are sending to the server, the current object is a JSON object
-        })
-        .then(response => {
-            if (response.ok) {console.log("Response was SUCCESSFUL!")}
-            else {console.log("Response was NOT successful!")}
-            return response.json();
-        })
-        .then(data => console.log(data));
+
+        // // The Fetch API interface allows web browser to make HTTP requests to web servers.
+        // fetch("https://Name.github.io/CS491-name-Exercise3/", {
+        //     method: 'POST', // this can be GET, POST, PUT, DELETE 
+        //     headers: { // this is telling the server how to interpret the data from the body content. in this case  it JSON data
+        //         'Content-Type': 'application/json',
+        //         'Accept': 'application/json'
+        //     }, 
+        //     body: JSON.stringify(token) //this is the data that we are sending to the server, the current object is a JSON object
+        // })
+        // .then(response => {
+        //     if (response.ok) {
+        //         console.log("Response was SUCCESSFUL!")
+        //     }
+        //     else {
+        //         console.log("Response was NOT successful!")
+        //     }
+        //     return response.json();
+        // })
+        // .then(data => console.log(data));
 
 
     </script>
