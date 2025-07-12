@@ -18,20 +18,24 @@
         if (a.indexOf("Edg") > 0) agent = "Edge";
 
         let serverToken = {};
-        let localToken = {user: "temp", browser: "temp"}; 
+        let localToken = {}; 
         let DoOnce = true;
+        let bCanPing = false;
 
         // initialize the ping button for each user depending on server connection order
         (async () => {
             // const response = await fetch("http://127.0.1:8080/token");
             await getToken(); // fetch the json token from the server
-            if (serverToken.user === null || serverToken.user === "") {
+            if ((serverToken.user === null || serverToken.user === "")) {
                 document.getElementById("ping").disabled = false; // enable the ping button
                 document.getElementById("ping").style.backgroundColor = "green"; // change the button color to green
-                await tempToken(localToken); // write to the server temporarily as local will be overwritten after Server token set
+                serverToken.user = "No Name"; // set a default user name
+                await tempToken(serverToken); 
+                bCanPing = true; 
             } else {
                 document.getElementById("ping").disabled = true; // disable the ping button
                 document.getElementById("ping").style.backgroundColor = "red"; // change the button color to red
+                bCanPing = false; 
             }
         })();
 
@@ -47,9 +51,10 @@
 
         // toggle the ping button between enabled and disabled states
         // and change the button color accordingly
-        function togglePingButton() {
-            const pingButton = document.getElementById("ping");
-            if (pingButton.disabled) {
+        async function togglePingButton() {
+            let pingButton = document.getElementById("ping");
+            console.log("userName:" + serverToken.user + "Browser:" +serverToken.browser + ", can ping:" + bCanPing);
+            if (pingButton.disabled && bCanPing === true) {
                 pingButton.disabled = false; // enable the button
                 pingButton.style.backgroundColor = "green"; // change the button color to green
             } else {
@@ -62,10 +67,10 @@
             setInterval(async () => {
 
                 await getToken(); // fetch the token from the server
-                if (serverToken.user && serverToken.user !== localToken.user) { // your button should be red too
-                    document.body.innerHTML += "<p>Hello world</p>"; // for debugging 
+                if (bCanPing === false && (serverToken.user !== "No Name" && serverToken.user !== localToken.user)) { // your button should be red too
+                    bCanPing = true; 
                     if (serverToken.user !== localToken.user) {
-                        togglePingButton(); // toggle the ping button state
+                        await togglePingButton(); // toggle the ping button state
                     }
                 } 
             }, 5000); 
@@ -82,7 +87,6 @@
             serverToken.browser = agent;
             localToken = serverToken; // copy the server token to the local token
             pollServerOnInterval(); // starting pollingt the server for updates on ping
-
         }
 
         // writes a token from Client as a JSON file on the Server
@@ -138,8 +142,10 @@
 
         let ping = document.getElementById("ping");
         ping.addEventListener("click", async () => {
+            bCanPing = false;
             await putToken(localToken);
             togglePingButton(); // toggle the ping button state
+            
         })
 
     </script>

@@ -21,7 +21,7 @@ app.get("/token", (request, response) => {
     const jData = fs.readFileSync('token.json'); // Read the token.json file
     const tokenData = JSON.parse(jData); // Parse the JSON data to js object 
 
-    console.log("GET Request Successfull!");
+    // console.log("GET Request Successfull!");
     response.json(tokenData);
 	
 })
@@ -37,8 +37,8 @@ app.post("/token", (request, response) => {
 app.post("/tempToken", (request, response) => {
     fs.writeFileSync('token.json', JSON.stringify(request.body, null, 2)); // Write the request body to token.json
 
-	console.log("TEMPTOKEN POST REQUEST SUCCESSFUL" + request.body);
-	response.send(`temp loaded to token ${request.body.user};`);
+	// console.log("TEMPTOKEN POST REQUEST SUCCESSFUL" + request.body);
+	// response.send(`temp loaded to token ${request.body.user};`);
 })
 
 app.get("/", (request, response) => {
@@ -47,7 +47,7 @@ app.get("/", (request, response) => {
 });
 
 function resetJSON() {
-    const nullState = { user: null, browser: null };
+    const nullState = { user: null, browser: null, canPing: null };
     fs.writeFileSync('token.json', JSON.stringify(nullState, null, 2));
     console.log('data.json has been reset.');
 }
