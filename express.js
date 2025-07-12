@@ -22,7 +22,6 @@ app.get("/token", (request, response) => {
     const tokenData = JSON.parse(jData); // Parse the JSON data to js object 
 
     console.log("GET Request Successfull!");
-
     response.json(tokenData);
 	
 })
@@ -30,13 +29,30 @@ app.get("/token", (request, response) => {
 app.post("/token", (request, response) => {
     fs.writeFileSync('token.json', JSON.stringify(request.body, null, 2)); // Write the request body to token.json
 
-	console.log("TOKEN POST REQUEST SUCCESSFUL");
-	console.log(request.body);
-
+	console.log("TOKEN POST REQUEST SUCCESSFUL" + request.body);
+    console.log(`PINGED from ${request.body.user};`);
 	response.send(`PINGED from ${request.body.user};`);
+})
+
+app.post("/tempToken", (request, response) => {
+    fs.writeFileSync('token.json', JSON.stringify(request.body, null, 2)); // Write the request body to token.json
+
+	console.log("TEMPTOKEN POST REQUEST SUCCESSFUL" + request.body);
+	response.send(`temp loaded to token ${request.body.user};`);
 })
 
 app.get("/", (request, response) => {
     console.log("new Browser connected.");
     response.send("Browser Connected... at " + PORT);
+});
+
+function resetJSON() {
+    const nullState = { user: null, browser: null };
+    fs.writeFileSync('token.json', JSON.stringify(nullState, null, 2));
+    console.log('data.json has been reset.');
+}
+
+process.on('SIGINT', () => {
+    resetJSON();
+    process.exit();
 });
