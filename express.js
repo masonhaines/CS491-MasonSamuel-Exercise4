@@ -29,7 +29,7 @@ app.get("/token", (request, response) => {
 app.post("/token", (request, response) => {
     fs.writeFileSync('token.json', JSON.stringify(request.body, null, 2)); // Write the request body to token.json
 
-	console.log("TOKEN POST REQUEST SUCCESSFUL" + request.body);
+	// console.log("TOKEN POST REQUEST SUCCESSFUL" + request.body);
     console.log(`PINGED from ${request.body.user};`);
 	response.send(`PINGED from ${request.body.user};`);
 })
